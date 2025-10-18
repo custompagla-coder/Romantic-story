@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Submit Story - Romantic Golpo</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav>
+    <div class="nav-container">
+      <a href="index.html" class="logo">🌹 Romantic Golpo</a>
+      <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="submit.html" id="submitLink">Submit Story</a>
+        <a href="admin.html" id="adminLink" class="hidden">Admin Panel</a>
+        
+        <!-- Profile Dropdown -->
+        <div class="profile-dropdown" id="profileDropdown">
+          <div class="profile-trigger" id="profileTrigger">
+            <div class="profile-avatar">
+              <span id="profileInitial">U</span>
+            </div>
+          </div>
+          <div class="profile-menu" id="profileMenu">
+            <div class="profile-menu-header">
+              <div class="profile-avatar-large">
+                <span id="profileInitialLarge">U</span>
+              </div>
+              <div class="profile-info">
+                <strong id="profileUsername">User</strong>
+                <small id="profileEmail">user@example.com</small>
+              </div>
+            </div>
+            <div class="profile-menu-divider"></div>
+            <a href="profile.html" class="profile-menu-item">
+              <span class="menu-icon">👤</span>
+              <span>View Profile</span>
+            </a>
+            <a href="submit.html" class="profile-menu-item">
+              <span class="menu-icon">✍️</span>
+              <span>Submit Story</span>
+            </a>
+            <div class="profile-menu-divider"></div>
+            <button class="profile-menu-item" id="logoutBtnDropdown">
+              <span class="menu-icon">🚪</span>
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="card" style="max-width: 800px; margin: 2rem auto;">
+      <h1 style="color: var(--primary); text-align: center; margin-bottom: 2rem;">📝 Share Your Love Story</h1>
+
+      <div id="alertContainer"></div>
+
+      <form id="submitForm">
+        <div class="form-group">
+          <label for="title">Story Title *</label>
+          <input type="text" id="title" class="form-control" required placeholder="Give your story a beautiful title...">
+        </div>
+
+        <div class="form-group">
+          <label for="intro">Short Introduction (Optional) <span style="color: var(--text-light); font-size: 0.9rem;">(Max 20 words)</span></label>
+          <textarea id="intro" class="form-control" rows="3" placeholder="A brief introduction to your story (will be shown on the home page)..." maxlength="200"></textarea>
+          <div style="display: flex; justify-content: space-between; margin-top: 0.5rem;">
+            <span id="introWordCount" style="font-size: 0.85rem; color: var(--text-light);">0 / 20 words</span>
+            <span id="introWarning" style="font-size: 0.85rem; color: #ef4444; display: none;">⚠️ Maximum 20 words allowed</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="categoryDropdown">Story Categories *</label>
+          <div class="custom-category-dropdown">
+            <div class="category-dropdown-header" id="categoryDropdownHeader">
+              <span id="categoryPlaceholder">Select categories...</span>
+              <span class="dropdown-arrow">▼</span>
+            </div>
+            <div class="category-dropdown-list" id="categoryDropdownList" style="display: none;">
+              <div class="category-option" data-value="মা ছেলে সেক্স">💕 মা ছেলে সেক্স</div>
+              <div class="category-option" data-value="Long Distance">🌍 Long Distance</div>
+              <div class="category-option" data-value="Heartbreak">💔 Heartbreak</div>
+              <div class="category-option" data-value="Marriage">💍 Marriage</div>
+              <div class="category-option" data-value="Secret Love">🤫 Secret Love</div>
+              <div class="category-option" data-value="পরকিয়া বাংলা চটি গল্প">👫 পরকিয়া বাংলা চটি গল্প</div>
+              <div class="category-option" data-value="Reunion">🔄 Reunion</div>
+              <div class="category-option" data-value="Second Chance">🎯 Second Chance</div>
+              <div class="category-option" data-value="Teenage Romance">🎓 Teenage Romance</div>
+              <div class="category-option" data-value="Office Romance">💼 Office Romance</div>
+              <div class="category-option" data-value="Online Love">💻 Online Love</div>
+              <div class="category-option" data-value="Family Opposition">👨‍👩‍👧 Family Opposition</div>
+              <div class="category-option" data-value="Eternal Love">♾️ Eternal Love</div>
+              <div class="category-option" data-value="Unrequited Love">😢 Unrequited Love</div>
+              <div class="category-option" data-value="Soulmate">✨ Soulmate</div>
+              <div class="category-option" data-value="Destiny">🌟 Destiny</div>
+            </div>
+          </div>
+          <div id="categoryError" style="color: #ef4444; font-size: 0.9rem; margin-top: 0.5rem; display: none;">
+            ⚠️ Please select at least one category
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="content">Your Story *</label>
+          <textarea id="content" class="form-control" rows="12" required placeholder="Share your romantic story here..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="image">Add an Image (Optional)</label>
+          <div class="file-upload" onclick="document.getElementById('image').click()">
+            <p>📷 Click to upload an image</p>
+            <p style="font-size: 0.9rem; color: var(--text-light);">JPG, PNG, or GIF (Max 10MB)</p>
+            <input type="file" id="image" accept="image/*">
+          </div>
+          <img id="imagePreview" class="file-preview hidden" alt="Preview">
+        </div>
+
+        <div style="text-align: center; margin-top: 2rem;">
+          <button type="submit" class="btn btn-primary" id="submitBtn">
+            Submit Story for Review
+          </button>
+        </div>
+
+        <p class="text-center text-muted mt-2">
+          Your story will be reviewed by our admin team before being published.
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/theme.js"></script>
+  <script src="js/submit.js"></script>
+
+  <footer>
+    <div class="footer-container">
+      <div class="footer-left">
+        <div class="footer-copyright">© Copyright 2025 Romantic Golpo</div>
+        <div class="footer-note">
+          The use of automatic services (robots, crawler, indexing etc.) as well as other methods for systematic or regular use is not permitted.
+        </div>
+      </div>
+
+      <div class="footer-center">
+        <a href="#" class="footer-link">Terms of use</a>
+        <span style="color: #606060;">•</span>
+        <a href="#" class="footer-link">Cookie policy</a>
+        <span style="color: #606060;">•</span>
+        <a href="#" class="footer-link">Privacy policy</a>
+      </div>
+
+      <div class="footer-right">
+        <span class="footer-social-label">Follow us</span>
+        <div class="footer-social-icons">
+          <a href="#" class="footer-social-icon" title="TikTok" aria-label="TikTok">♪</a>
+          <a href="#" class="footer-social-icon" title="Instagram" aria-label="Instagram">📷</a>
+          <a href="#" class="footer-social-icon" title="Facebook" aria-label="Facebook">f</a>
+          <a href="#" class="footer-social-icon" title="LinkedIn" aria-label="LinkedIn">in</a>
+          <a href="#" class="footer-social-icon" title="Twitter" aria-label="Twitter">𝕏</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-id">production@Romantic-Golpo/local/0x9b8c2d8a5e4c06fd</div>
+  </footer>
+</body>
+</html>

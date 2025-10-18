@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile - Choti Golpo</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav>
+    <div class="nav-container">
+      <a href="index.html" class="logo">🌹 Choti Golpo</a>
+      <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="submit.html" id="submitLink">Submit Story</a>
+        <a href="profile.html" id="profileLink">Profile</a>
+        <a href="admin.html" id="adminLink" class="hidden">Admin Panel</a>
+        <span id="userGreeting"></span>
+        <button id="logoutBtn">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div id="alertContainer"></div>
+
+    <!-- Profile Header -->
+    <div class="profile-header card">
+      <div class="profile-picture-section">
+        <div class="profile-picture-container">
+          <div class="profile-picture" id="profilePicture">
+            <img id="profileImage" src="" alt="Profile" style="display: none;">
+            <span id="userInitial" class="profile-initial">U</span>
+          </div>
+          <div class="profile-picture-overlay" id="profilePictureOverlay">
+            <span class="camera-icon">📷</span>
+            <span class="change-text">Change Photo</span>
+          </div>
+          <input type="file" id="profileImageInput" accept="image/*" style="display: none;">
+        </div>
+        <div class="profile-details">
+          <h1 id="profileUsername">Loading...</h1>
+          <p id="profileEmail">email@example.com</p>
+          <button class="btn btn-secondary btn-small" id="uploadPhotoBtn">
+            📷 Upload Photo
+          </button>
+          <button class="btn btn-outline btn-small hidden" id="removePhotoBtn">
+            🗑️ Remove Photo
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="stories">📚 My Stories</button>
+      <button class="tab-btn" data-tab="settings">⚙️ Settings</button>
+    </div>
+
+    <!-- My Stories Tab -->
+    <div id="storiesTab" class="tab-content active">
+      <div id="storiesLoading" class="loading">
+        <div class="spinner"></div>
+        <p>Loading your stories...</p>
+      </div>
+      
+      <div id="storiesContainer" class="story-grid hidden"></div>
+      
+      <div id="noStories" class="empty-state hidden">
+        <h2>📝 No Stories Yet</h2>
+        <p>Start sharing your romantic stories with the world!</p>
+        <a href="submit.html" class="btn btn-primary">Write Your First Story</a>
+      </div>
+    </div>
+
+    <!-- Settings Tab -->
+    <div id="settingsTab" class="tab-content hidden">
+      <!-- Change Password -->
+      <div class="card">
+        <h2>🔒 Change Password</h2>
+        <form id="changePasswordForm">
+          <div class="form-group">
+            <label for="currentPassword">Current Password</label>
+            <input type="password" id="currentPassword" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="newPassword">New Password</label>
+            <input type="password" id="newPassword" class="form-control" required minlength="6">
+          </div>
+          <div class="form-group">
+            <label for="confirmPassword">Confirm New Password</label>
+            <input type="password" id="confirmPassword" class="form-control" required minlength="6">
+          </div>
+          <button type="submit" class="btn btn-primary">Change Password</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-container">
+      <div class="footer-content">
+        <div class="footer-left">
+          <h3>🌹 Romantic Golpo</h3>
+          <p>Share your love stories with the world</p>
+        </div>
+        <div class="footer-right">
+          <div class="footer-social">
+            <a href="#" class="footer-social-icon" title="Instagram" aria-label="Instagram">📷</a>
+            <a href="#" class="footer-social-icon" title="Facebook" aria-label="Facebook">f</a>
+            <a href="#" class="footer-social-icon" title="LinkedIn" aria-label="LinkedIn">in</a>
+            <a href="#" class="footer-social-icon" title="Twitter" aria-label="Twitter">𝕏</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-id">production@Romantic-Golpo/local/0x9b8c2d8a5e4c06fd</div>
+  </footer>
+
+  <script src="js/theme.js"></script>
+  <script src="js/navigation.js"></script>
+  <script src="js/profile.js"></script>
+</body>
+</html>

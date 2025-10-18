@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Story - Choti Golpo</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav>
+    <div class="nav-container">
+      <a href="index.html" class="logo">🌹 Choti Golpo</a>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="submit.html" id="submitLink" class="hidden">Submit Story</a>
+        <a href="admin.html" id="adminLink" class="hidden">Admin Panel</a>
+        <span id="userGreeting" class="hidden"></span>
+        <button id="logoutBtn" class="hidden">Logout</button>
+        <a href="login.html" id="loginLink">Login</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div id="loadingContainer" class="loading">
+      <div class="spinner"></div>
+      <p>Loading story...</p>
+    </div>
+
+    <div id="storyContainer" class="hidden"></div>
+
+    <div id="errorContainer" class="hidden" style="text-align: center; padding: 3rem;">
+      <h2 style="color: var(--primary); margin-bottom: 1rem;">Story Not Found</h2>
+      <p style="color: var(--text-light); margin-bottom: 2rem;">The story you're looking for doesn't exist or has been removed.</p>
+      <a href="index.html" class="btn btn-primary">Back to Home</a>
+    </div>
+  </div>
+
+  <script src="js/theme.js"></script>
+  <script>
+    const API_URL = 'http://localhost:5000/api';
+    
+    // Load website logo
+    function loadWebsiteLogo() {
+      const savedLogo = localStorage.getItem('websiteLogo');
+      const websiteName = localStorage.getItem('websiteName') || 'Choti Golpo';
+      const logos = document.querySelectorAll('.logo');
+      
+      logos.forEach(logo => {
+        if (savedLogo) {
+          logo.innerHTML = `<img src="${savedLogo}" alt="Logo" style="height: 35px; width: auto; vertical-align: middle; margin-right: 8px;"> ${websiteName}`;
+        } else {
+          logo.innerHTML = `🌹 ${websiteName}`;
+        }
+      });
+    }
+    
+    // Load logo on page load
+    loadWebsiteLogo();
+    
+    // Disable copy protection for story content
+    document.addEventListener('DOMContentLoaded', function() {
+      // Disable right-click
+      document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        return false;
+      });
+      
+      // Disable text selection via keyboard
+      document.addEventListener('keydown', function(e) {
+        // Disable Ctrl+C, Ctrl+A, Ctrl+X, Ctrl+U, F12, Ctrl+Shift+I
+        if (e.ctrlKey && (e.key === 'c' || e.key === 'C' || 
+                          e.key === 'x' || e.key === 'X' || 
+                          e.key === 'a' || e.key === 'A' ||
+                          e.key === 'u' || e.key === 'U')) {
+          e.preventDefault();
+          return false;
+        }
+        
+        // Disable F12 (Developer Tools)
+        if (e.key === 'F12') {
+          e.preventDefault();
+          return false;
+        }
+        
+        // Disable Ctrl+Shift+I (Inspect Element)
+        if (e.ctrlKey && e.shiftKey && (e.key === 'i' || e.key === 'I')) {
+          e.preventDefault();
+          return false;
+        }
+        
+        // Disable Ctrl+Shift+J (Console)
+        if (e.ctrlKey && e.shiftKey && (e.key === 'j' || e.key === 'J')) {
+          e.preventDefault();
+          return false;
+        }
+        
+        // Disable Ctrl+Shift+C (Inspect)
+        if (e.ctrlKey && e.shiftKey && (e.key === 'c' || e.key === 'C')) {
+          e.preventDefault();
+          return false;
+        }
+      });
+      
+      // Disable copy event
+      document.addEventListener('copy', function(e) {
+        e.preventDefault();
+        return false;
+      });
+      
+      // Disable cut event
+      document.addEventListener('cut', function(e) {
+        e.preventDefault();
+        return false;
+      });
+      
+      // Disable drag and drop
+      document.addEventListener('dragstart', function(e) {
+        e.preventDefault();
+        return false;
+      });
+    });
+
+    // Check authentication
+    function checkAuth() {
+      const token = localStorage.getItem('token');
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+      if (token && user.username) {
+        document.getElementById('loginLink').classList.add('hidden');
+        document.getElementById('logoutBtn').classList.remove('hidden');
+        document.getElementById('submitLink').classList.remove('hidden');
+        document.getElementById('userGreeting').classList.remove('hidden');
+        document.getElementById('userGreeting').textContent = `Hello, ${user.username}!`;
+
+        if (user.role === 'admin') {
+          document.getElementById('adminLink').classList.remove('hidden');
+        }
+      }
+    }
+
+    // Logout
+    document.getElementById('logoutBtn')?.addEventListener('click', () => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = 'index.html';
+    });
+
+    // Get story ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const storyId = urlParams.get('id');
+
+    if (!storyId) {
+      document.getElementById('loadingContainer').classList.add('hidden');
+      document.getElementById('errorContainer').classList.remove('hidden');
+    } else {
+      loadStory(storyId);
+    }
+
+    async function loadStory(id) {
+      try {
+        const response = await fetch(`${API_URL}/stories/${id}`);
+        
+        if (!response.ok) {
+          throw new Error('Story not found');
+        }
+
+        const story = await response.json();
+        displayStory(story);
+        incrementView(id);
+      } catch (error) {
+        console.error('Error loading story:', error);
+        document.getElementById('loadingContainer').classList.add('hidden');
+        document.getElementById('errorContainer').classList.remove('hidden');
+      }
+    }
+
+    function displayStory(story) {
+      const container = document.getElementById('storyContainer');
+      
+      // Handle both old single category and new multiple categories format
+      const categories = story.categories || (story.category ? [story.category] : []);
+      const categoryBadgesHTML = categories.length > 0 
+        ? `<div class="story-categories">
+            ${categories.map(cat => `<span class="category-badge" onclick="goToCategoryFilter('${escapeHtml(cat)}')">${escapeHtml(cat)}</span>`).join('')}
+          </div>` 
+        : '';
+      
+      const storyHTML = `
+        <div class="story-detail">
+          <div class="story-detail-header">
+            <h1 class="story-detail-title">${escapeHtml(story.title)}</h1>
+            ${categoryBadgesHTML}
+            <div class="story-detail-meta">
+              <span>✍️ By ${escapeHtml(story.author)}</span>
+              <span>📅 ${new Date(story.createdAt).toLocaleDateString()}</span>
+              <span>👁️ <span id="viewCount">${story.views || 0}</span> views</span>
+              <button class="like-btn" onclick="likeStory('${story.id}')">
+                ❤️ <span id="likeCount">${story.likes || 0}</span>
+              </button>
+            </div>
+          </div>
+
+          ${story.image ? `<img src="${story.image}" alt="${escapeHtml(story.title)}" class="story-detail-image">` : ''}
+          
+          <div class="story-detail-content">${escapeHtml(story.content)}</div>
+
+          ${story.video ? `
+            <video controls class="story-detail-video">
+              <source src="${story.video}" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+          ` : ''}
+        </div>
+
+        <!-- Comments Section -->
+        <div class="comments-section">
+          <h2 class="comments-title">💬 Comments (<span id="commentCount">0</span>)</h2>
+          
+          <!-- Comment Form -->
+          <div id="commentFormContainer" class="comment-form hidden">
+            <textarea id="commentText" class="form-control" rows="3" placeholder="Share your thoughts about this story..."></textarea>
+            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+              <button onclick="postComment('${story.id}')" class="btn btn-primary btn-small">Post Comment</button>
+              <button onclick="cancelComment()" class="btn btn-secondary btn-small">Cancel</button>
+            </div>
+          </div>
+
+          <div id="commentLoginPrompt" class="hidden" style="text-align: center; padding: 2rem; background: var(--accent); border-radius: 12px; margin-bottom: 2rem;">
+            <p style="color: var(--text-light); margin-bottom: 1rem;">Please login to leave a comment</p>
+            <a href="login.html" class="btn btn-primary btn-small">Login</a>
+          </div>
+
+          <button id="addCommentBtn" class="btn btn-primary btn-small hidden" onclick="showCommentForm()" style="margin-bottom: 2rem;">
+            ✍️ Add Comment
+          </button>
+
+          <!-- Comments List -->
+          <div id="commentsList"></div>
+        </div>
+
+        <div style="text-align: center; margin-top: 3rem;">
+          <a href="index.html" class="btn btn-secondary">← Back to Stories</a>
+        </div>
+      `;
+
+      container.innerHTML = storyHTML;
+      document.getElementById('loadingContainer').classList.add('hidden');
+      container.classList.remove('hidden');
+      
+      // Load comments and setup comment UI
+      loadComments(story.id);
+      setupCommentUI();
+      checkIfUserLiked(story);
+    }
+
+    // Check if current user has already liked the story
+    function checkIfUserLiked(story) {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const likeBtn = document.querySelector('.like-btn');
+      
+      if (user.id && story.likedBy && story.likedBy.includes(user.id)) {
+        likeBtn.disabled = true;
+        likeBtn.style.opacity = '0.6';
+        likeBtn.style.cursor = 'not-allowed';
+        likeBtn.title = 'You already liked this story';
+      }
+    }
+
+    async function incrementView(id) {
+      try {
+        const response = await fetch(`${API_URL}/stories/${id}/view`, {
+          method: 'POST'
+        });
+
+        const data = await response.json();
+        
+        if (response.ok && document.getElementById('viewCount')) {
+          document.getElementById('viewCount').textContent = data.views;
+        }
+      } catch (error) {
+        console.error('Error incrementing view:', error);
+      }
+    }
+
+    async function likeStory(id) {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        alert('Please login to like stories');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/stories/${id}/like`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+          document.getElementById('likeCount').textContent = data.likes;
+          // Disable the button after successful like
+          const likeBtn = document.querySelector('.like-btn');
+          likeBtn.disabled = true;
+          likeBtn.style.opacity = '0.6';
+          likeBtn.style.cursor = 'not-allowed';
+          likeBtn.title = 'You already liked this story';
+        } else if (data.alreadyLiked) {
+          alert('You have already liked this story');
+          // Disable the button
+          const likeBtn = document.querySelector('.like-btn');
+          likeBtn.disabled = true;
+          likeBtn.style.opacity = '0.6';
+          likeBtn.style.cursor = 'not-allowed';
+          likeBtn.title = 'You already liked this story';
+        } else {
+          alert(data.error || 'Failed to like story');
+        }
+      } catch (error) {
+        console.error('Error liking story:', error);
+        alert('Failed to like story. Please try again.');
+      }
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Navigate to home page with category filter
+    function goToCategoryFilter(category) {
+      window.location.href = `index.html?category=${encodeURIComponent(category)}`;
+    }
+
+    // Setup comment UI based on auth status
+    function setupCommentUI() {
+      const token = localStorage.getItem('token');
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      
+      if (token && user.username) {
+        document.getElementById('addCommentBtn').classList.remove('hidden');
+        document.getElementById('commentLoginPrompt').classList.add('hidden');
+      } else {
+        document.getElementById('addCommentBtn').classList.add('hidden');
+        document.getElementById('commentLoginPrompt').classList.remove('hidden');
+      }
+    }
+
+    // Show comment form
+    function showCommentForm() {
+      document.getElementById('commentFormContainer').classList.remove('hidden');
+      document.getElementById('addCommentBtn').classList.add('hidden');
+      document.getElementById('commentText').focus();
+    }
+
+    // Cancel comment
+    function cancelComment() {
+      document.getElementById('commentFormContainer').classList.add('hidden');
+      document.getElementById('addCommentBtn').classList.remove('hidden');
+      document.getElementById('commentText').value = '';
+    }
+
+    // Load comments
+    async function loadComments(storyId) {
+      try {
+        const response = await fetch(`${API_URL}/stories/${storyId}/comments`);
+        const data = await response.json();
+        
+        if (response.ok) {
+          displayComments(data.comments, storyId);
+          document.getElementById('commentCount').textContent = data.totalComments;
+        }
+      } catch (error) {
+        console.error('Error loading comments:', error);
+      }
+    }
+
+    // Display comments
+    function displayComments(comments, storyId) {
+      const container = document.getElementById('commentsList');
+      const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+      
+      if (comments.length === 0) {
+        container.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 2rem;">No comments yet. Be the first to comment!</p>';
+        return;
+      }
+
+      // Sort comments by date (newest first)
+      comments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+      container.innerHTML = comments.map(comment => {
+        // Get commenter's profile picture
+        const commenterProfilePic = localStorage.getItem(`profilePic_${comment.authorId}`);
+        const avatarHTML = commenterProfilePic 
+          ? `<img src="${commenterProfilePic}" alt="${escapeHtml(comment.author)}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border);">` 
+          : `<div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; border: 2px solid white;">${escapeHtml(comment.author.charAt(0).toUpperCase())}</div>`;
+        
+        return `
+          <div class="comment-card">
+            <div class="comment-header">
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                ${avatarHTML}
+                <div>
+                  <strong style="color: var(--primary);">${escapeHtml(comment.author)}</strong>
+                  <span style="color: var(--text-light); font-size: 0.85rem; margin-left: 1rem;">
+                    ${new Date(comment.createdAt).toLocaleString()}
+                  </span>
+                </div>
+              </div>
+              ${(currentUser.id === comment.authorId || currentUser.role === 'admin') ? `
+                <button onclick="deleteComment('${storyId}', '${comment.id}')" class="btn-delete-comment" title="Delete comment">
+                  🗑️
+                </button>
+              ` : ''}
+            </div>
+            <div class="comment-text" style="margin-left: 3rem;">${escapeHtml(comment.text)}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Post comment
+    async function postComment(storyId) {
+      const text = document.getElementById('commentText').value.trim();
+      const token = localStorage.getItem('token');
+
+      if (!text) {
+        alert('Please enter a comment');
+        return;
+      }
+
+      if (!token) {
+        alert('Please login to comment');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/stories/${storyId}/comments`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ text })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          document.getElementById('commentText').value = '';
+          cancelComment();
+          loadComments(storyId);
+        } else {
+          alert(data.error || 'Failed to post comment');
+        }
+      } catch (error) {
+        console.error('Error posting comment:', error);
+        alert('Failed to post comment. Please try again.');
+      }
+    }
+
+    // Delete comment
+    async function deleteComment(storyId, commentId) {
+      if (!confirm('Are you sure you want to delete this comment?')) {
+        return;
+      }
+
+      const token = localStorage.getItem('token');
+
+      try {
+        const response = await fetch(`${API_URL}/stories/${storyId}/comments/${commentId}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          loadComments(storyId);
+        } else {
+          alert(data.error || 'Failed to delete comment');
+        }
+      } catch (error) {
+        console.error('Error deleting comment:', error);
+        alert('Failed to delete comment. Please try again.');
+      }
+    }
+
+    checkAuth();
+  </script>
+  <script src="js/theme.js"></script>
+
+  <footer>
+    <div class="footer-container">
+      <div class="footer-left">
+        <div class="footer-copyright">© Copyright 2025 Romantic Golpo</div>
+        <div class="footer-note">
+          The use of automatic services (robots, crawler, indexing etc.) as well as other methods for systematic or regular use is not permitted.
+        </div>
+      </div>
+
+      <div class="footer-center">
+        <a href="#" class="footer-link">Terms of use</a>
+        <span style="color: #606060;">•</span>
+        <a href="#" class="footer-link">Cookie policy</a>
+        <span style="color: #606060;">•</span>
+        <a href="#" class="footer-link">Privacy policy</a>
+      </div>
+
+      <div class="footer-right">
+        <span class="footer-social-label">Follow us</span>
+        <div class="footer-social-icons">
+          <a href="#" class="footer-social-icon" title="TikTok" aria-label="TikTok">♪</a>
+          <a href="#" class="footer-social-icon" title="Instagram" aria-label="Instagram">📷</a>
+          <a href="#" class="footer-social-icon" title="Facebook" aria-label="Facebook">f</a>
+          <a href="#" class="footer-social-icon" title="LinkedIn" aria-label="LinkedIn">in</a>
+          <a href="#" class="footer-social-icon" title="Twitter" aria-label="Twitter">𝕏</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-id">production@Romantic-Golpo/local/0x9b8c2d8a5e4c06fd</div>
+  </footer>
+</body>
+</html>

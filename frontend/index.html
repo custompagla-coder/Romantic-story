@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Share and read romantic love stories. A platform for writers to share their heartfelt stories with the world.">
+  <meta name="keywords" content="love stories, romantic stories, choti golpo, bengali stories, story sharing">
+  <meta name="author" content="Choti Golpo">
+  <title>Story Blog</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav>
+    <div class="nav-container">
+      <a href="index.html" class="logo">Romantic Story Ratted</a>
+      
+      <!-- Mobile Profile Avatar (visible only on mobile) -->
+      <div class="profile-dropdown profile-dropdown-mobile hidden" id="profileDropdownMobile">
+        <div class="profile-trigger" id="profileTriggerMobile">
+          <div class="profile-avatar">
+            <span id="profileInitialMobile">U</span>
+          </div>
+        </div>
+        <div class="profile-menu" id="profileMenuMobile">
+          <div class="profile-menu-header">
+            <div class="profile-avatar-large">
+              <span id="profileInitialLargeMobile">U</span>
+            </div>
+            <div class="profile-info">
+              <strong id="profileUsernameMobile">User</strong>
+              <small id="profileEmailMobile">user@example.com</small>
+            </div>
+          </div>
+          <div class="profile-menu-divider"></div>
+          <a href="profile.html" class="profile-menu-item">
+            <span class="menu-icon">👤</span>
+            <span>View Profile</span>
+          </a>
+          <a href="submit.html" class="profile-menu-item">
+            <span class="menu-icon">✍️</span>
+            <span>Submit Story</span>
+          </a>
+          <div class="profile-menu-divider"></div>
+          <button class="profile-menu-item" id="logoutBtnDropdownMobile">
+            <span class="menu-icon">🚪</span>
+            <span>Logout</span>
+          </button>
+        </div>
+      </div>
+      
+      <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="submit.html" id="submitLink" class="hidden">Submit Story</a>
+        <a href="admin.html" id="adminLink" class="hidden">Admin Panel</a>
+        <a href="login.html" id="loginLink">Login</a>
+        
+        <!-- Profile Dropdown -->
+        <div class="profile-dropdown hidden" id="profileDropdown">
+          <div class="profile-trigger" id="profileTrigger">
+            <div class="profile-avatar">
+              <span id="profileInitial">U</span>
+            </div>
+          </div>
+          <div class="profile-menu" id="profileMenu">
+            <div class="profile-menu-header">
+              <div class="profile-avatar-large">
+                <span id="profileInitialLarge">U</span>
+              </div>
+              <div class="profile-info">
+                <strong id="profileUsername">User</strong>
+                <small id="profileEmail">user@example.com</small>
+              </div>
+            </div>
+            <div class="profile-menu-divider"></div>
+            <a href="profile.html" class="profile-menu-item">
+              <span class="menu-icon">👤</span>
+              <span>View Profile</span>
+            </a>
+            <a href="submit.html" class="profile-menu-item">
+              <span class="menu-icon">✍️</span>
+              <span>Submit Story</span>
+            </a>
+            <div class="profile-menu-divider"></div>
+            <button class="profile-menu-item" id="logoutBtnDropdown">
+              <span class="menu-icon">🚪</span>
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- <div class="hero">
+      <h1>💕 Welcome 💕</h1>
+      <p>Hello</p>
+    </div> -->
+
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="🔍 Search stories by title or author...">
+    </div>
+
+    <div id="alertContainer"></div>
+
+    <div id="loadingContainer" class="loading">
+      <div class="spinner"></div>
+      <p>Loading stories...</p>
+    </div>
+
+    <!-- Filter Buttons -->
+    <div id="filterButtons" class="filter-buttons hidden">
+      <button class="filter-btn active" data-filter="all" onclick="filterStories('all')">
+        📚 ALL STORIES
+      </button>
+      <button class="filter-btn" data-filter="latest" onclick="filterStories('latest')">
+        🆕 LATEST
+      </button>
+      <button class="filter-btn" data-filter="popular" onclick="filterStories('popular')">
+        ⭐ POPULAR
+      </button>
+      <button class="filter-btn" data-filter="top-rated" onclick="filterStories('top-rated')">
+        ❤️ TOP RATED
+      </button>
+      <button class="filter-btn" data-filter="trending" onclick="filterStories('trending')">
+        🔥 TRENDING
+      </button>
+      <button class="filter-btn" data-filter="authors" onclick="filterStories('authors')">
+        👤 POPULAR AUTHORS
+      </button>
+      <button class="filter-btn" data-filter="categories" onclick="toggleCategories()">
+        📂 CATEGORIES
+      </button>
+    </div>
+
+    <!-- Category Filter Buttons (loaded dynamically) -->
+    <div id="categoryButtons" class="filter-buttons hidden" style="margin-top: 1rem; display: none;">
+      <!-- Categories will be loaded dynamically with counts -->
+    </div>
+
+    <!-- Stories Container -->
+    <div id="storiesContainer" class="story-grid hidden"></div>
+
+    <div id="noStoriesMessage" class="hidden" style="text-align: center; padding: 3rem; color: var(--text-light);">
+      <h2 style="color: var(--primary); margin-bottom: 1rem;">No Stories Yet</h2>
+      <p>Be the first to share your romantic story!</p>
+      <a href="submit.html" class="btn btn-primary mt-2">Submit Your Story</a>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-container">
+      <div class="footer-left">
+        <div class="footer-copyright">© Copyright 2025 Ahad's web services</div>
+        <div class="footer-note">
+          The use of automatic services (robots, crawler, indexing etc.) as well as other methods for systematic or regular use is not permitted.
+        </div>
+      </div>
+
+      <div class="footer-center">
+        <a href="#" class="footer-link">Terms of use</a>
+        <span style="color: #606060;">•</span>
+        <a href="#" class="footer-link">Cookie policy</a>
+        <span style="color: #606060;">•</span>
+        <a href="#" class="footer-link">Privacy policy</a>
+      </div>
+
+      <div class="footer-right">
+        <span class="footer-social-label">Follow us</span>
+        <div class="footer-social-icons">
+          <a href="#" class="footer-social-icon" title="TikTok" aria-label="TikTok">♪</a>
+          <a href="#" class="footer-social-icon" title="Instagram" aria-label="Instagram">📷</a>
+          <a href="#" class="footer-social-icon" title="Facebook" aria-label="Facebook">f</a>
+          <a href="#" class="footer-social-icon" title="LinkedIn" aria-label="LinkedIn">in</a>
+          <a href="#" class="footer-social-icon" title="Twitter" aria-label="Twitter">𝕏</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-id">production@Romantic-Golpo/local/0x9b8c2d8a5e4c06fd</div>
+  </footer>
+
+  <script src="js/theme.js"></script>
+  <script src="js/navigation.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

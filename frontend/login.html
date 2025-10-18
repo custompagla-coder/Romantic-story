@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Romantic Golpo</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <h1>🌹 Romantic Golpo</h1>
+        <p>Share your love stories with the world</p>
+      </div>
+
+      <div id="alertContainer"></div>
+
+      <!-- Login Form -->
+      <form id="loginForm" class="auth-form">
+        <h2 style="text-align: center; margin-bottom: 1.5rem; color: var(--primary);">Login</h2>
+        
+        <div class="form-group">
+          <label for="loginUsername">Username</label>
+          <input type="text" id="loginUsername" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+          <label for="loginPassword">Password</label>
+          <div class="password-input-wrapper">
+            <input type="password" id="loginPassword" class="form-control" required>
+            <button type="button" class="password-toggle" onclick="togglePassword('loginPassword')">
+              👁️
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+
+        <p class="text-center mt-2">
+          Don't have an account? 
+          <a href="#" id="showSignup" style="color: var(--primary); font-weight: 600;">Sign Up</a>
+        </p>
+      </form>
+
+      <!-- Signup Form -->
+      <form id="signupForm" class="auth-form hidden">
+        <h2 style="text-align: center; margin-bottom: 1.5rem; color: var(--primary);">Sign Up</h2>
+        
+        <div class="form-group">
+          <label for="signupUsername">Username</label>
+          <input type="text" id="signupUsername" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+          <label for="signupEmail">Email</label>
+          <input type="email" id="signupEmail" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+          <label for="signupPassword">Password</label>
+          <div class="password-input-wrapper">
+            <input type="password" id="signupPassword" class="form-control" required>
+            <button type="button" class="password-toggle" onclick="togglePassword('signupPassword')">
+              👁️
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="signupConfirmPassword">Confirm Password</label>
+          <div class="password-input-wrapper">
+            <input type="password" id="signupConfirmPassword" class="form-control" required>
+            <button type="button" class="password-toggle" onclick="togglePassword('signupConfirmPassword')">
+              👁️
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Sign Up</button>
+
+        <p class="text-center mt-2">
+          Already have an account? 
+          <a href="#" id="showLogin" style="color: var(--primary); font-weight: 600;">Login</a>
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/theme.js"></script>
+  <script src="js/auth.js"></script>
+
+  <footer>
+    <div class="footer-container">
+      <div class="footer-left">
+        <div class="footer-copyright">© Copyright 2025 Romantic Golpo</div>
+        <div class="footer-note">
+          The use of automatic services (robots, crawler, indexing etc.) as well as other methods for systematic or regular use is not permitted.
+        </div>
+      </div>
+
+      <div class="footer-center">
+        <a href="#" class="footer-link">Terms of use</a>
+        <span style="color: #606060;">•</span>
+        <a href="#" class="footer-link">Cookie policy</a>
+        <span style="color: #606060;">•</span>
+        <a href="#" class="footer-link">Privacy policy</a>
+      </div>
+
+      <div class="footer-right">
+        <span class="footer-social-label">Follow us</span>
+        <div class="footer-social-icons">
+          <a href="#" class="footer-social-icon" title="TikTok" aria-label="TikTok">♪</a>
+          <a href="#" class="footer-social-icon" title="Instagram" aria-label="Instagram">📷</a>
+          <a href="#" class="footer-social-icon" title="Facebook" aria-label="Facebook">f</a>
+          <a href="#" class="footer-social-icon" title="LinkedIn" aria-label="LinkedIn">in</a>
+          <a href="#" class="footer-social-icon" title="Twitter" aria-label="Twitter">𝕏</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-id">production@Romantic-Golpo/local/0x9b8c2d8a5e4c06fd</div>
+  </footer>
+</body>
+</html>

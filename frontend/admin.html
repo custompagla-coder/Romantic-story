@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Choti Golpo</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav>
+    <div class="nav-container">
+      <a href="index.html" class="logo">🌹 Choti Golpo</a>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="submit.html">Submit Story</a>
+        <a href="admin.html">Admin Panel</a>
+        <span id="userGreeting"></span>
+        <button id="logoutBtn">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="admin-header">
+      <h1>🛡️ Admin Dashboard</h1>
+      <p>Manage and moderate submitted stories</p>
+    </div>
+
+    <div class="admin-stats">
+      <div class="stat-card">
+        <div class="stat-number" id="totalStories">0</div>
+        <div class="stat-label">Total Stories</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="pendingStories">0</div>
+        <div class="stat-label">Pending Review</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="approvedStories">0</div>
+        <div class="stat-label">Approved</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="rejectedStories">0</div>
+        <div class="stat-label">Rejected</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="totalUsers">0</div>
+        <div class="stat-label">Total Users</div>
+      </div>
+    </div>
+
+    <div id="alertContainer"></div>
+
+    <!-- Tabs -->
+    <div class="admin-tabs">
+      <button class="admin-tab-btn active" data-tab="stories">📚 Story Management</button>
+      <button class="admin-tab-btn" data-tab="users">👥 User Management</button>
+      <button class="admin-tab-btn" data-tab="categories">📂 Category Management</button>
+      <button class="admin-tab-btn" data-tab="settings">⚙️ Website Settings</button>
+    </div>
+
+    <!-- Story Management Tab -->
+    <div id="storiesTab" class="admin-tab-content active">
+      <div class="admin-table">
+      <h2 style="color: var(--primary); margin-bottom: 1.5rem;">Story Management</h2>
+      
+      <div style="margin-bottom: 1.5rem;">
+        <label style="margin-right: 1rem; font-weight: 500;">Filter:</label>
+        <button class="btn btn-small btn-primary" onclick="filterStories('all')">All</button>
+        <button class="btn btn-small btn-secondary" onclick="filterStories('pending')">Pending</button>
+        <button class="btn btn-small btn-secondary" onclick="filterStories('approved')">Approved</button>
+        <button class="btn btn-small btn-secondary" onclick="filterStories('rejected')">Rejected</button>
+      </div>
+
+      <div id="loadingContainer" class="loading">
+        <div class="spinner"></div>
+        <p>Loading stories...</p>
+      </div>
+
+      <div id="storiesTableContainer" class="hidden">
+        <table>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Author</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="storiesTableBody">
+          </tbody>
+        </table>
+      </div>
+
+      <div id="noStoriesMessage" class="hidden" style="text-align: center; padding: 2rem; color: var(--text-light);">
+        No stories found.
+      </div>
+    </div>
+    </div>
+
+    <!-- User Management Tab -->
+    <div id="usersTab" class="admin-tab-content hidden">
+      <div class="admin-table">
+        <h2 style="color: var(--primary); margin-bottom: 1.5rem;">👥 Registered Users</h2>
+        
+        <div id="usersLoadingContainer" class="loading">
+          <div class="spinner"></div>
+          <p>Loading users...</p>
+        </div>
+
+        <div id="usersTableContainer" class="hidden">
+          <div class="users-grid" id="usersGrid">
+            <!-- User cards will be inserted here -->
+          </div>
+        </div>
+
+        <div id="noUsersMessage" class="hidden" style="text-align: center; padding: 2rem; color: var(--text-light);">
+          No users found.
+        </div>
+      </div>
+    </div>
+
+    <!-- Category Management Tab -->
+    <div id="categoriesTab" class="admin-tab-content hidden">
+      <div class="admin-table">
+        <h2 style="color: var(--primary); margin-bottom: 1.5rem;">📂 Category Management</h2>
+        
+        <div class="settings-section">
+          <p style="color: var(--text-light); margin-bottom: 1.5rem;">
+            Add, rename, or remove categories. All changes automatically update the database and frontend files.
+          </p>
+          
+          <!-- Add New Category Section -->
+          <div style="background: var(--accent); border: 2px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;">
+            <h3 style="color: var(--primary); margin-bottom: 1rem;">➕ Add New Category</h3>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
+              <div style="flex: 0 0 80px;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--text-dark);">Emoji</label>
+                <input 
+                  type="text" 
+                  id="newCategoryEmoji" 
+                  class="form-control emoji-input" 
+                  placeholder="😊"
+                  maxlength="2"
+                  style="text-align: center; font-size: 1.5rem;"
+                >
+              </div>
+              <div style="flex: 1; min-width: 200px;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--text-dark);">Category Name</label>
+                <input 
+                  type="text" 
+                  id="newCategoryName" 
+                  class="form-control" 
+                  placeholder="Enter new category name..."
+                >
+              </div>
+              <div>
+                <button class="btn btn-success" onclick="addNewCategory()">
+                  ➕ Add Category
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div id="categoryLoadingContainer" class="loading">
+            <div class="spinner"></div>
+            <p>Loading categories...</p>
+          </div>
+
+          <div id="categoryListContainer" class="hidden">
+            <h3 style="color: var(--text-dark); margin-bottom: 1rem;">Existing Categories</h3>
+            <div id="categoryList" class="category-management-list">
+              <!-- Categories will be loaded here -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Website Settings Tab -->
+    <div id="settingsTab" class="admin-tab-content hidden">
+      <div class="admin-table">
+        <h2 style="color: var(--primary); margin-bottom: 1.5rem;">⚙️ Website Settings</h2>
+        
+        <div class="settings-section">
+          <h3 style="color: var(--text-dark); margin-bottom: 1rem;">Website Branding</h3>
+          <p style="color: var(--text-light); margin-bottom: 1.5rem;">
+            Customize your website's logo and name that appears in the navigation bar.
+          </p>
+          
+          <div style="margin-bottom: 2rem;">
+            <label for="websiteName" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--text-dark);">
+              Website Name
+            </label>
+            <input 
+              type="text" 
+              id="websiteName" 
+              class="form-control" 
+              placeholder="Enter website name (e.g., Choti Golpo)"
+              value="Choti Golpo"
+              style="max-width: 400px;"
+            >
+            <button class="btn btn-primary" onclick="saveWebsiteName()" style="margin-top: 1rem;">
+              💾 Save Website Name
+            </button>
+          </div>
+          
+          <div style="border-top: 2px solid var(--border); padding-top: 2rem;">
+            <h4 style="color: var(--text-dark); margin-bottom: 1rem;">Website Logo</h4>
+            <p style="color: var(--text-light); margin-bottom: 1.5rem;">
+              Upload a custom logo to replace the default emoji. Recommended size: 40x40px to 80x80px.
+            </p>
+            
+            <div class="logo-preview-container">
+              <div class="logo-preview">
+                <div id="currentLogo" class="current-logo">
+                  🌹
+                </div>
+                <p style="margin-top: 0.5rem; color: var(--text-light); font-size: 0.9rem;">Current Logo</p>
+              </div>
+            </div>
+            
+            <div style="margin-top: 1.5rem;">
+              <input type="file" id="logoUpload" accept="image/*" style="display: none;">
+              <button class="btn btn-primary" onclick="document.getElementById('logoUpload').click()">
+                📤 Upload New Logo
+              </button>
+              <button class="btn btn-secondary" onclick="removeLogo()" style="margin-left: 1rem;">
+                🗑️ Remove Logo (Use Default)
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Story Preview Modal -->
+  <div id="storyModal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 2rem;">
+    <div style="background: var(--card-bg); border-radius: 20px; padding: 2rem; max-width: 800px; max-height: 90vh; overflow-y: auto; position: relative;">
+      <button onclick="closeModal()" style="position: absolute; top: 1rem; right: 1rem; background: var(--primary); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 1.5rem;">×</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <script src="js/theme.js"></script>
+  <script src="js/admin.js"></script>
+
+  <footer>
+    <div class="footer-container">
+      <div class="footer-left">
+        <div class="footer-copyright">© Copyright 2025 Romantic Golpo</div>
+        <div class="footer-note">
+          The use of automatic services (robots, crawler, indexing etc.) as well as other methods for systematic or regular use is not permitted.
+        </div>
+      </div>
+
+      <div class="footer-center">
+        <a href="#" class="footer-link">Terms of use</a>
+        <span style="color: #606060;">•</span>
+        <a href="#" class="footer-link">Cookie policy</a>
+        <span style="color: #606060;">•</span>
+        <a href="#" class="footer-link">Privacy policy</a>
+      </div>
+
+      <div class="footer-right">
+        <span class="footer-social-label">Follow us</span>
+        <div class="footer-social-icons">
+          <a href="#" class="footer-social-icon" title="TikTok" aria-label="TikTok">♪</a>
+          <a href="#" class="footer-social-icon" title="Instagram" aria-label="Instagram">📷</a>
+          <a href="#" class="footer-social-icon" title="Facebook" aria-label="Facebook">f</a>
+          <a href="#" class="footer-social-icon" title="LinkedIn" aria-label="LinkedIn">in</a>
+          <a href="#" class="footer-social-icon" title="Twitter" aria-label="Twitter">𝕏</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-id">production@Romantic-Golpo/local/0x9b8c2d8a5e4c06fd</div>
+  </footer>
+</body>
+</html>
